@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — Kotori Blog</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem("theme")||"dark";document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body data-page="404">
+<div class="win">
+<div class="win-bar">
+<span class="dots"><i></i><i></i><i></i></span>
+<span class="win-title">kotori@blog — ~/posts</span>
+<button class="theme-btn" type="button" data-theme-toggle aria-label="切换主题">[theme]</button>
+</div>
+<header class="site-head">
+<a class="brand" href="index.html"><span class="brand-path">~</span><span class="brand-slash">/</span><span class="brand-name">kotori</span><span class="caret">_</span></a>
+<nav class="site-nav">
+<a href="index.html">index</a>
+<a href="post.html?p=about.md">about</a>
+<a href="https://github.com/" target="_blank" rel="noopener">github</a>
+</nav>
+</header>
+<main>
+<section class="notfound">
+<p class="cmd"><span class="sig">$</span> cat ./page.md</p>
+<h1 class="page-title">404</h1>
+<p class="err">cat: ./page.md: No such file or directory</p>
+<p class="hint">这个页面不存在。<a href="index.html">回到 index</a></p>
+</section>
+</main>
+<footer class="site-foot">
+<p class="cmd"><span class="sig">$</span> echo "stay curious."</p>
+<p class="foot-meta">© 2026 Kotori · <a href="https://github.com/" target="_blank" rel="noopener">github</a> <span class="dim">/</span> <a href="mailto:hi@example.com">mail</a></p>
+</footer>
+</div>
+<script src="assets/markdown.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
