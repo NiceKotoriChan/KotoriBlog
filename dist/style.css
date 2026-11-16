@@ -21,6 +21,7 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --glass-line: rgba(0, 0, 0, 0.07);
   --glass-shadow: 0 16px 40px rgba(20, 30, 60, 0.2);
+  --head-h: 68px;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
@@ -37,7 +38,7 @@ html {
 
 body {
   margin: 0;
-  padding: 2.2rem 1.1rem 3.5rem;
+  padding: calc(var(--head-h) + 2rem) 1.1rem 3.5rem;
   min-height: 100vh;
   min-height: 100dvh;
   background: transparent;
@@ -79,7 +80,7 @@ a {
   flex-direction: column;
   width: 100%;
   max-width: 880px;
-  margin: 2.2rem auto;
+  margin: 0 auto;
   background: var(--glass);
   border: 1px solid var(--glass-line);
   border-radius: 12px;
@@ -91,26 +92,30 @@ a {
 }
 
 .site-head {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 20;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  height: var(--head-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.1rem;
+  background: var(--glass-sticky);
+  border-bottom: 1px solid var(--glass-line);
+  box-shadow: 0 8px 24px rgba(20, 30, 60, 0.06);
+  -webkit-backdrop-filter: blur(18px) saturate(0.9);
+  backdrop-filter: blur(18px) saturate(0.9);
+}
+
+.head-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  flex-wrap: wrap;
-  padding: 1.15rem 1.6rem;
-  border-bottom: 1px solid var(--glass-line);
-  border-radius: 12px 12px 0 0;
-  background: transparent;
-  transition: background 0.25s var(--ease), box-shadow 0.25s var(--ease);
-}
-
-.site-head.is-stuck {
-  background: var(--glass-sticky);
-  -webkit-backdrop-filter: blur(18px) saturate(0.9);
-  backdrop-filter: blur(18px) saturate(0.9);
-  box-shadow: 0 10px 26px rgba(20, 30, 60, 0.08);
+  width: 100%;
+  max-width: 880px;
 }
 
 .brand {
@@ -639,13 +644,20 @@ tbody tr:hover {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --head-h: 58px;
+  }
+
   body {
-    padding: 0.9rem 0.6rem 2rem;
+    padding: calc(var(--head-h) + 1.2rem) 0.6rem 2rem;
     font-size: 15px;
   }
 
   .site-head {
-    padding: 0.9rem 1rem;
+    padding: 0 0.6rem;
+  }
+
+  .head-inner {
     gap: 0.7rem;
   }
 

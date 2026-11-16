@@ -51,18 +51,5 @@
       });
   }
 
-  function bindHead() {
-    var head = document.querySelector('.site-head');
-    if (!head) return;
-
-    function update() {
-      head.classList.toggle('is-stuck', head.getBoundingClientRect().top <= 0);
-    }
-
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-  }
-
-  bindHead();
   if (document.body.dataset.page === 'index') renderList();
 })();
