@@ -105,27 +105,15 @@ a {
 
 .brand {
   font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--ink-strong);
   display: inline-flex;
   align-items: center;
 }
 
-.brand-path {
-  color: var(--accent);
-}
-
-.brand-slash {
-  color: var(--dim-2);
-}
-
 .brand:hover .brand-name {
-  border-bottom: 1px solid var(--accent-dim);
-}
-
-.caret {
   color: var(--accent);
-  margin-left: 2px;
-  animation: blink 1.15s steps(1) infinite;
 }
 
 @keyframes blink {
@@ -158,40 +146,6 @@ a {
 
 main {
   padding: 1.8rem 1.6rem 2.6rem;
-}
-
-.cmd {
-  margin: 0 0 0.9rem;
-  font-size: 12.5px;
-  color: var(--dim);
-  letter-spacing: 0.02em;
-}
-
-.sig {
-  color: var(--accent);
-  margin-right: 0.45rem;
-}
-
-.hero {
-  padding: 0.4rem 0 1.8rem;
-}
-
-.hero-title {
-  margin: 0;
-  font-size: clamp(1.75rem, 4.6vw, 2.5rem);
-  line-height: 1.2;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--ink-strong);
-}
-
-.hero-title::after {
-  content: "";
-  display: block;
-  width: 64px;
-  height: 2px;
-  margin-top: 0.85rem;
-  background: linear-gradient(90deg, var(--accent), transparent);
 }
 
 .year {
@@ -251,20 +205,6 @@ main {
 .post-head {
   padding-bottom: 1.1rem;
   border-bottom: 1px dashed var(--line);
-}
-
-.post-path {
-  margin: 0 0 0.7rem;
-  font-size: 11.5px;
-  color: var(--dim-2);
-}
-
-.post-path a {
-  color: var(--dim);
-}
-
-.post-path a:hover {
-  color: var(--accent);
 }
 
 .post-head h1 {
@@ -642,10 +582,6 @@ tbody tr:hover {
   border-top: 1px dashed var(--line);
   font-size: 11.5px;
   color: var(--dim-2);
-}
-
-.site-foot .cmd {
-  margin-bottom: 0.5rem;
 }
 
 .site-foot a {

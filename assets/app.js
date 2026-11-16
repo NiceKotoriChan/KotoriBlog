@@ -14,7 +14,7 @@
 
   function fail(target, message, hint) {
     target.innerHTML =
-      '<p class="err">$ fetch: ' + esc(message) + '</p>' +
+      '<p class="err">读取失败：' + esc(message) + '</p>' +
       '<p class="hint">' + (hint || '双击打开本地 html 时，浏览器不允许读取本地文件。用 <code>python3 -m http.server</code> 起个本地服务，或者直接看部署后的站点。') + '</p>';
   }
 
@@ -78,12 +78,10 @@
 
       target.innerHTML =
         '<header class="post-head">' +
-        '<p class="post-path"><a href="index.html">~</a><span class="dim">/</span>posts<span class="dim">/</span><span>' +
-        esc(file) + '</span></p>' +
         '<h1>' + esc(title) + '</h1>' +
         '</header>' +
         '<div class="prose">' + window.Markdown.render(markdown) + '</div>' +
-        '<p class="more"><a href="index.html">← ls posts/</a></p>';
+        '<p class="more"><a href="index.html">← 返回</a></p>';
 
       document.dispatchEvent(new CustomEvent('post:ready', { detail: { file: file } }));
     }).catch(function (err) {

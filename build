@@ -44,18 +44,14 @@ summary_of() {
 }
 
 render_home() {
-  local block tmp name base date_part year day title noun last_year
+  local block tmp name base date_part year day title last_year
   block=$(mktemp)
   tmp=$(mktemp)
-  noun="files"
-  [ "${#files[@]}" -eq 1 ] && noun="file"
   last_year=""
 
   {
-    printf '<p class="cmd"><span class="sig">$</span> ls posts/ <span class="dim">— %d %s</span></p>\n' "${#files[@]}" "$noun"
-
     if [ ${#files[@]} -eq 0 ]; then
-      printf '<p class="empty">// posts/ 里还没有 md</p>\n'
+      printf '<p class="empty">posts/ 里还没有 md</p>\n'
     else
       for path in "${files[@]}"; do
         name=$(basename "$path")
