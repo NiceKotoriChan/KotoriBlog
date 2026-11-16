@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+SITE_URL="https://kotoriblog.pages.dev"
+SITE_URL="${SITE_URL%/}"
+SITE_TITLE="KotoriBlog"
+SITE_SUBTITLE="写点东西的地方，关于代码、工具和日常折腾。"
+SITE_AUTHOR="Kotori"
+SITE_TZ="+0800"
+POSTS_DIR="posts"
+OUT="rss.xml"
+
+xml_escape() {
+  printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g' -e "s/'/\&apos;/g"
+}
+
+mtime_of() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1"
+}
+
+epoch_of() {
+  local date_part=${1%%-*}
+  if [[ $date_part =~ ^[0-9]{6}$ ]]; then
+    date -d "20${date_part:0:2}-${date_part:2:2}-${date_part:4:2} 00:00:00 $SITE_TZ" +%s 2>/dev/null || true
+  fi
+}
+
+iso() {
+  date -u -d "@$1" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -r "$1" +%Y-%m-%dT%H:%M:%SZ
+}
+
+summary_of() {
+  awk 'BEGIN{RS=""; ORS=""} /^[[:space:]]*(#|```)/{next} {print; exit}' "$1" |
+    sed -e 's/^[[:space:]]*>[[:space:]]*//' \
+      -e 's/^[[:space:]]*[-*+][[:space:]]*\(\[[ xX]\][[:space:]]*\)\?//' \
+      -e 's/^[[:space:]]*[0-9]\{1,\}[.)][[:space:]]*//' \
+      -e 's/!\[[^]]*\](\([^)]*\))/\1/g' \
+      -e 's/\[\([^]]*\)\]([^)]*)/\1/g' \
+      -e 's/[`*~]//g' \
+      -e 's/[[:space:]]*|[[:space:]]*/ /g' |
+    tr '\n' ' ' || true
+}
+
+render_home() {
+  local block tmp name noun
+  block=$(mktemp)
+  tmp=$(mktemp)
+  noun="files"
+  [ "${#files[@]}" -eq 1 ] && noun="file"
+
+  {
+    printf '<p class="cmd"><span class="sig">$</span> ls posts/ <span class="dim">— %d %s</span></p>\n' "${#files[@]}" "$noun"
+    if [ ${#files[@]} -gt 0 ]; then
+      printf '<ul class="filelist">\n'
+      for path in "${files[@]}"; do
+        name=$(basename "$path")
+        printf '<li><a class="file" href="post.html?p=%s"><span class="fmark">-</span><span class="fname">%s</span></a></li>\n' \
+          "$(xml_escape "${name// /%20}")" "$(xml_escape "$name")"
+      done
+      printf '</ul>\n'
+    else
+      printf '<p class="empty">// posts/ 里还没有 md</p>\n'
+    fi
+  } > "$block"
+
+  awk -v block="$block" '
+    /<!-- build:start -->/ { print; while ((getline line < block) > 0) print line; close(block); skip = 1; next }
+    /<!-- build:end -->/ { skip = 0 }
+    skip { next }
+    { print }
+  ' index.html > "$tmp"
+
+  mv "$tmp" index.html
+  rm -f "$block"
+}
+
+files=()
+if [ -d "$POSTS_DIR" ]; then
+  raw=$(find "$POSTS_DIR" -maxdepth 1 -type f -name '*.md' | sort)
+  if [ -n "$raw" ]; then
+    list=$(while IFS= read -r path; do
+      epoch=$(epoch_of "$(basename "$path" .md)")
+      [ -n "$epoch" ] || epoch=$(mtime_of "$path")
+      printf '%s\t%s\n' "$epoch" "$path"
+    done <<< "$raw" | sort -t "$(printf '\t')" -k1,1nr -k2,2 | cut -f2-)
+    mapfile -t files <<< "$list"
+  fi
+fi
+
+updated=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+if [ ${#files[@]} -gt 0 ]; then
+  newest=$(epoch_of "$(basename "${files[0]}" .md)")
+  [ -n "$newest" ] || newest=$(mtime_of "${files[0]}")
+  updated=$(iso "$newest")
+fi
+
+{
+  printf '<?xml version="1.0" encoding="utf-8"?>\n'
+  printf '<feed xmlns="http://www.w3.org/2005/Atom">\n'
+  printf '  <title>%s</title>\n' "$(xml_escape "$SITE_TITLE")"
+  printf '  <subtitle>%s</subtitle>\n' "$(xml_escape "$SITE_SUBTITLE")"
+  printf '  <link href="%s/" rel="alternate"/>\n' "$(xml_escape "$SITE_URL")"
+  printf '  <link href="%s/rss.xml" rel="self"/>\n' "$(xml_escape "$SITE_URL")"
+  printf '  <id>%s/</id>\n' "$(xml_escape "$SITE_URL")"
+  printf '  <updated>%s</updated>\n' "$updated"
+  printf '  <author><name>%s</name></author>\n' "$(xml_escape "$SITE_AUTHOR")"
+  printf '  <generator>build</generator>\n'
+
+  if [ ${#files[@]} -gt 0 ]; then
+    for path in "${files[@]}"; do
+      name=$(basename "$path" .md)
+      if [[ $name =~ ^[0-9]{6}-(.+)$ ]]; then
+        title=${BASH_REMATCH[1]}
+      else
+        title=$name
+      fi
+      epoch=$(epoch_of "$name")
+      [ -n "$epoch" ] || epoch=$(mtime_of "$path")
+      stamp=$(iso "$epoch")
+      link="$SITE_URL/post.html?p=${name// /%20}.md"
+      text=$(summary_of "$path")
+      text=$(printf '%s' "$text" | sed -e 's/[[:space:]]\{1,\}/ /g' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+      short=$(printf '%s' "$text" | cut -c1-180)
+      if [ "$short" != "$text" ]; then
+        short="${short}…"
+      fi
+
+      printf '  <entry>\n'
+      printf '    <id>%s</id>\n' "$(xml_escape "$name")"
+      printf '    <title>%s</title>\n' "$(xml_escape "$title")"
+      printf '    <link href="%s"/>\n' "$(xml_escape "$link")"
+      printf '    <updated>%s</updated>\n' "$stamp"
+      printf '    <published>%s</published>\n' "$stamp"
+      if [ -n "$short" ]; then
+        printf '    <summary type="text">%s</summary>\n' "$(xml_escape "$short")"
+      fi
+      printf '  </entry>\n'
+    done
+  fi
+
+  printf '</feed>\n'
+} > "$OUT"
+
+render_home
+
+printf '%s: %d entries · index.html: %d files\n' "$OUT" "${#files[@]}" "${#files[@]}"
+
+if [ "${1:-}" != "--no-git" ] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git add -A
+  if git diff --cached --quiet; then
+    printf 'git: nothing to commit\n'
+  elif git commit -q -m "build: refresh index.html and rss.xml"; then
+    printf 'git: committed\n'
+  else
+    printf 'git: commit failed (检查 user.name / user.email)\n'
+  fi
+
+  if [ -n "$(git remote)" ]; then
+    if GIT_TERMINAL_PROMPT=0 git push -q origin HEAD; then
+      printf 'git: pushed\n'
+    else
+      printf 'git: push failed\n'
+    fi
+  else
+    printf 'git: no remote, skipped push\n'
+  fi
+fi

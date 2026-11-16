@@ -12,10 +12,10 @@
     });
   }
 
-  function fail(target, message) {
+  function fail(target, message, hint) {
     target.innerHTML =
       '<p class="err">$ fetch: ' + esc(message) + '</p>' +
-      '<p class="hint">双击打开本地 html 时，浏览器不允许读取 md 文件。用 <code>python3 -m http.server</code> 起个本地服务，或者直接看部署后的站点。</p>';
+      '<p class="hint">' + (hint || '双击打开本地 html 时，浏览器不允许读取本地文件。用 <code>python3 -m http.server</code> 起个本地服务，或者直接看部署后的站点。') + '</p>';
   }
 
   function bindTheme() {
@@ -62,30 +62,6 @@
     });
   }
 
-  function renderList() {
-    var target = document.getElementById('list');
-    if (!target) return;
-
-    get('posts/index.txt').then(function (text) {
-      var files = text.split('\n').map(function (line) {
-        return line.trim();
-      }).filter(function (line) {
-        return line && line.charAt(0) !== '#' && /\.md$/i.test(line);
-      });
-
-      var rows = files.map(function (file) {
-        return '<li><a class="file" href="post.html?p=' + encodeURIComponent(file) + '">' +
-          '<span class="fmark">-</span><span class="fname">' + esc(file) + '</span></a></li>';
-      }).join('');
-
-      target.innerHTML =
-        '<p class="cmd"><span class="sig">$</span> ls posts/ <span class="dim">— ' + files.length + ' files</span></p>' +
-        (files.length ? '<ul class="filelist">' + rows + '</ul>' : '<p class="empty">// posts/index.txt 是空的</p>');
-    }).catch(function (err) {
-      fail(target, err.message);
-    });
-  }
-
   function renderPost() {
     var target = document.getElementById('post');
     if (!target) return;
@@ -97,17 +73,19 @@
     }
 
     get('posts/' + file).then(function (markdown) {
-      var name = file.replace(/\.md$/i, '');
-      document.title = name + ' — ' + document.body.dataset.site;
+      var title = file.replace(/\.md$/i, '').replace(/^\d{6}-/, '');
+      document.title = title + ' — ' + document.body.dataset.site;
 
       target.innerHTML =
         '<header class="post-head">' +
         '<p class="post-path"><a href="index.html">~</a><span class="dim">/</span>posts<span class="dim">/</span><span>' +
         esc(file) + '</span></p>' +
-        '<h1>' + esc(name) + '</h1>' +
+        '<h1>' + esc(title) + '</h1>' +
         '</header>' +
         '<div class="prose">' + window.Markdown.render(markdown) + '</div>' +
         '<p class="more"><a href="index.html">← ls posts/</a></p>';
+
+      document.dispatchEvent(new CustomEvent('post:ready', { detail: { file: file } }));
     }).catch(function (err) {
       fail(target, err.message);
     });
@@ -116,6 +94,5 @@
   bindTheme();
   bindCopy();
 
-  if (document.body.dataset.page === 'index') renderList();
   if (document.body.dataset.page === 'post') renderPost();
 })();

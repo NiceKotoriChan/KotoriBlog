@@ -7,6 +7,7 @@
 <meta name="description" content="写点东西的地方，关于代码、工具和日常折腾。">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="alternate" type="application/atom+xml" title="Kotori Blog" href="rss.xml">
 <script>try{var t=localStorage.getItem("theme")||"dark";document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body data-page="index" data-site="Kotori Blog">
@@ -20,7 +21,7 @@
 <a class="brand" href="index.html"><span class="brand-path">~</span><span class="brand-slash">/</span><span class="brand-name">kotori</span><span class="caret">_</span></a>
 <nav class="site-nav">
 <a href="index.html" class="is-active">index</a>
-<a href="post.html?p=about.md">about</a>
+<a href="rss.xml">rss</a>
 <a href="https://github.com/" target="_blank" rel="noopener">github</a>
 </nav>
 </header>
@@ -28,10 +29,15 @@
 <section class="hero">
 <p class="cmd"><span class="sig">$</span> whoami</p>
 <h1 class="hero-title">Kotori Blog</h1>
-<p class="hero-desc">写点东西的地方。文章就是 posts/ 目录下的 markdown 文件，没有构建步骤，也没有框架。</p>
+<p class="hero-desc">写点东西的地方。文章就是 posts/ 目录下的 markdown 文件，跑一下 ./build 生成列表和订阅源，没有框架。</p>
 </section>
 <section id="list">
-<p class="loading">$ ls posts/</p>
+<!-- build:start -->
+<p class="cmd"><span class="sig">$</span> ls posts/ <span class="dim">— 1 file</span></p>
+<ul class="filelist">
+<li><a class="file" href="post.html?p=261116-建站.md"><span class="fmark">-</span><span class="fname">261116-建站.md</span></a></li>
+</ul>
+<!-- build:end -->
 </section>
 </main>
 <footer class="site-foot">

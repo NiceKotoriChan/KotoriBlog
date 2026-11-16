@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>KotoriBlog</title>
+  <subtitle>写点东西的地方，关于代码、工具和日常折腾。</subtitle>
+  <link href="https://kotoriblog.pages.dev/" rel="alternate"/>
+  <link href="https://kotoriblog.pages.dev/rss.xml" rel="self"/>
+  <id>https://kotoriblog.pages.dev/</id>
+  <updated>2026-11-15T16:00:00Z</updated>
+  <author><name>Kotori</name></author>
+  <generator>build</generator>
+  <entry>
+    <id>261116-建站</id>
+    <title>建站</title>
+    <link href="https://kotoriblog.pages.dev/post.html?p=261116-建站.md"/>
+    <updated>2026-11-15T16:00:00Z</updated>
+    <published>2026-11-15T16:00:00Z</published>
+  </entry>
+</feed>
