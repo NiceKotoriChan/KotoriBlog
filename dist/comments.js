@@ -3,10 +3,6 @@
   var section = document.getElementById('comments');
   if (!section) return;
 
-  function theme() {
-    return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
-  }
-
   function ready() {
     return config.repo && config.repoId && config.categoryId;
   }
@@ -28,7 +24,7 @@
     script.setAttribute('data-reactions-enabled', '1');
     script.setAttribute('data-emit-metadata', '0');
     script.setAttribute('data-input-position', 'top');
-    script.setAttribute('data-theme', theme());
+    script.setAttribute('data-theme', 'light');
     script.setAttribute('data-lang', 'zh-CN');
     script.setAttribute('data-loading', 'lazy');
 
@@ -36,20 +32,9 @@
     section.appendChild(script);
   }
 
-  function syncTheme() {
-    var frame = section.querySelector('iframe.giscus-frame');
-    if (!frame || !frame.contentWindow) return;
-    frame.contentWindow.postMessage({ giscus: { setConfig: { theme: theme() } } }, 'https://giscus.app');
-  }
-
   window.addEventListener('message', function (event) {
     if (event.origin !== 'https://giscus.app') return;
     if (event.data && event.data.giscus && event.data.giscus.discussion) section.dataset.loaded = '1';
-  });
-
-  new MutationObserver(syncTheme).observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['data-theme']
   });
 
   var post = document.body.dataset.post;

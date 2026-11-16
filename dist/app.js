@@ -1,18 +1,4 @@
 (function () {
-  var root = document.documentElement;
-
-  function bindTheme() {
-    var button = document.querySelector('[data-theme-toggle]');
-    if (!button) return;
-    button.addEventListener('click', function () {
-      var next = root.dataset.theme === 'light' ? 'dark' : 'light';
-      root.dataset.theme = next;
-      try {
-        localStorage.setItem('theme', next);
-      } catch (err) {}
-    });
-  }
-
   function esc(value) {
     return String(value).replace(/[&<>]/g, function (ch) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch];
@@ -33,6 +19,7 @@
         var entries = doc.querySelectorAll('entry');
         var html = '';
         var year = '';
+        var index = 0;
 
         for (var i = 0; i < entries.length; i++) {
           var link = entries[i].querySelector('link').getAttribute('href');
@@ -51,8 +38,9 @@
           }
 
           html +=
-            '<li><a class="post-row" href="blogs/' + esc(file) + '.html">' +
+            '<li style="--i:' + index + '"><a class="post-row" href="blogs/' + esc(file) + '.html">' +
             '<time>' + day + '</time><span class="post-title">' + esc(title) + '</span></a></li>\n';
+          index++;
         }
 
         if (year) html += '</ul>\n';
@@ -63,6 +51,18 @@
       });
   }
 
-  bindTheme();
+  function bindHead() {
+    var head = document.querySelector('.site-head');
+    if (!head) return;
+
+    function update() {
+      head.classList.toggle('is-stuck', head.getBoundingClientRect().top <= 0);
+    }
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+
+  bindHead();
   if (document.body.dataset.page === 'index') renderList();
 })();
