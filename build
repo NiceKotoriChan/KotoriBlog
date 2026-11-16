@@ -6,14 +6,18 @@ cd "$(dirname "$0")"
 SITE_URL="https://kotoriblog.pages.dev"
 SITE_URL="${SITE_URL%/}"
 SITE_TITLE="KotoriBlog"
-SITE_SUBTITLE="写点东西的地方，关于代码、工具和日常折腾。"
 SITE_AUTHOR="Kotori"
 SITE_TZ="+0800"
+DIST="dist"
 POSTS_DIR="posts"
-OUT="rss.xml"
+OUT="atom.xml"
 
 xml_escape() {
   printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g' -e "s/'/\&apos;/g"
+}
+
+urlencode() {
+  python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1]))' "$1"
 }
 
 mtime_of() {
@@ -43,55 +47,50 @@ summary_of() {
     tr '\n' ' ' || true
 }
 
-render_home() {
-  local block tmp name base date_part year day title last_year
-  block=$(mktemp)
-  tmp=$(mktemp)
-  last_year=""
+ensure_cmark() {
+  command -v cmark-gfm >/dev/null 2>&1 && return 0
+  if command -v apt-get >/dev/null 2>&1; then
+    (sudo -n apt-get install -y cmark-gfm || apt-get install -y cmark-gfm) >/dev/null 2>&1 || true
+  fi
+  if ! command -v cmark-gfm >/dev/null 2>&1; then
+    printf 'build: 需要 cmark-gfm（本地: sudo pacman -S cmark-gfm，Debian/Ubuntu: sudo apt install cmark-gfm）\n' >&2
+    exit 1
+  fi
+}
 
-  {
-    if [ ${#files[@]} -eq 0 ]; then
-      printf '<p class="empty">posts/ 里还没有 md</p>\n'
+build_posts() {
+  local path name base title body
+  mkdir -p "$DIST/blogs"
+  body=$(mktemp)
+  for path in "${files[@]}"; do
+    name=$(basename "$path")
+    base=${name%.md}
+    if [[ $base =~ ^[0-9]{6}-(.+)$ ]]; then
+      title=${BASH_REMATCH[1]}
     else
-      for path in "${files[@]}"; do
-        name=$(basename "$path")
-        base=${name%.md}
-        date_part=${base%%-*}
-
-        if [[ $date_part =~ ^[0-9]{6}$ ]]; then
-          year="20${date_part:0:2}"
-          day="${date_part:2:2}-${date_part:4:2}"
-          title=${base#*-}
-        else
-          year=$(date -d "@$(mtime_of "$path")" +%Y)
-          day=$(date -d "@$(mtime_of "$path")" +%m-%d)
-          title=$base
-        fi
-
-        if [ "$year" != "$last_year" ]; then
-          if [ -n "$last_year" ]; then
-            printf '</ul>\n'
-          fi
-          printf '<h2 class="year">%s</h2>\n<ul class="posts">\n' "$(xml_escape "$year")"
-          last_year=$year
-        fi
-
-        printf '<li><a class="post-row" href="post.html?p=%s"><time>%s</time><span class="post-title">%s</span></a></li>\n' \
-          "$(xml_escape "${name// /%20}")" "$(xml_escape "$day")" "$(xml_escape "$title")"
-      done
-      printf '</ul>\n'
+      title=$base
     fi
-  } > "$block"
+    cmark-gfm --unsafe -e table -e strikethrough -e tasklist "$path" > "$body"
+    awk -v t="$title" -v p="posts/$name" -v f="$body" '
+      {
+        gsub(/\{\{TITLE\}\}/, t)
+        gsub(/\{\{POST\}\}/, p)
+        if ($0 ~ /\{\{BODY\}\}/) {
+          while ((getline line < f) > 0) print line
+          close(f)
+          next
+        }
+        print
+      }
+    ' "$DIST/post.html" > "$DIST/blogs/$base.html"
+  done
+  rm -f "$body"
 
-  awk -v block="$block" '
-    /<!-- build:start -->/ { print; while ((getline line < block) > 0) print line; close(block); skip = 1; next }
-    /<!-- build:end -->/ { skip = 0 }
-    skip { next }
-    { print }
-  ' index.html > "$tmp"
-
-  mv "$tmp" index.html
-  rm -f "$block"
+  for html in "$DIST"/blogs/*.html; do
+    [ -e "$html" ] || continue
+    stem=$(basename "${html%.html}")
+    [ -f "$POSTS_DIR/$stem.md" ] || rm -f "$html"
+  done
 }
 
 files=()
@@ -107,6 +106,9 @@ if [ -d "$POSTS_DIR" ]; then
   fi
 fi
 
+ensure_cmark
+build_posts
+
 updated=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 if [ ${#files[@]} -gt 0 ]; then
   newest=$(epoch_of "$(basename "${files[0]}" .md)")
@@ -118,9 +120,8 @@ fi
   printf '<?xml version="1.0" encoding="utf-8"?>\n'
   printf '<feed xmlns="http://www.w3.org/2005/Atom">\n'
   printf '  <title>%s</title>\n' "$(xml_escape "$SITE_TITLE")"
-  printf '  <subtitle>%s</subtitle>\n' "$(xml_escape "$SITE_SUBTITLE")"
   printf '  <link href="%s/" rel="alternate"/>\n' "$(xml_escape "$SITE_URL")"
-  printf '  <link href="%s/rss.xml" rel="self"/>\n' "$(xml_escape "$SITE_URL")"
+  printf '  <link href="%s/%s" rel="self"/>\n' "$(xml_escape "$SITE_URL")" "$OUT"
   printf '  <id>%s/</id>\n' "$(xml_escape "$SITE_URL")"
   printf '  <updated>%s</updated>\n' "$updated"
   printf '  <author><name>%s</name></author>\n' "$(xml_escape "$SITE_AUTHOR")"
@@ -137,7 +138,7 @@ fi
       epoch=$(epoch_of "$name")
       [ -n "$epoch" ] || epoch=$(mtime_of "$path")
       stamp=$(iso "$epoch")
-      link="$SITE_URL/post.html?p=${name// /%20}.md"
+      link="$SITE_URL/blogs/$(urlencode "$name").html"
       text=$(summary_of "$path")
       text=$(printf '%s' "$text" | sed -e 's/[[:space:]]\{1,\}/ /g' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
       short=$(printf '%s' "$text" | cut -c1-180)
@@ -159,17 +160,15 @@ fi
   fi
 
   printf '</feed>\n'
-} > "$OUT"
+} > "$DIST/$OUT"
 
-render_home
-
-printf '%s: %d entries · index.html: %d files\n' "$OUT" "${#files[@]}" "${#files[@]}"
+printf '%s/%s: %d entries · %s/blogs/: %d pages\n' "$DIST" "$OUT" "${#files[@]}" "$DIST" "${#files[@]}"
 
 if [ "${1:-}" != "--no-git" ] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git add -A
   if git diff --cached --quiet; then
     printf 'git: nothing to commit\n'
-  elif git commit -q -m "build: refresh index.html and rss.xml"; then
+  elif git commit -q -m "build: refresh dist"; then
     printf 'git: committed\n'
   else
     printf 'git: commit failed (检查 user.name / user.email)\n'

@@ -11,7 +11,7 @@
     return config.repo && config.repoId && config.categoryId;
   }
 
-  function inject(file) {
+  function inject(term) {
     if (!ready()) return;
 
     var script = document.createElement('script');
@@ -23,7 +23,7 @@
     script.setAttribute('data-category', config.category || 'Comments');
     script.setAttribute('data-category-id', config.categoryId);
     script.setAttribute('data-mapping', 'specific');
-    script.setAttribute('data-term', 'posts/' + file);
+    script.setAttribute('data-term', term);
     script.setAttribute('data-strict', '1');
     script.setAttribute('data-reactions-enabled', '1');
     script.setAttribute('data-emit-metadata', '0');
@@ -52,7 +52,6 @@
     attributeFilter: ['data-theme']
   });
 
-  document.addEventListener('post:ready', function (event) {
-    inject(event.detail.file);
-  });
+  var post = document.body.dataset.post;
+  if (post) inject(post);
 })();
