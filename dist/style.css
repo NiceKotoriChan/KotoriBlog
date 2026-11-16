@@ -43,9 +43,15 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--page);
+}
+
 body {
   margin: 0;
   padding: 2.2rem 1.1rem 3.5rem;
+  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(900px 420px at 50% -12%, var(--glow), transparent 70%),
     var(--page);
@@ -80,7 +86,7 @@ a {
 
 .theme-btn {
   font: inherit;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--dim);
   background: none;
   border: 0;
@@ -106,9 +112,9 @@ a {
 }
 
 .brand {
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--ink-strong);
   display: inline-flex;
   align-items: center;
@@ -120,8 +126,9 @@ a {
 
 .site-nav {
   display: flex;
-  gap: 1.15rem;
-  font-size: 13px;
+  align-items: baseline;
+  gap: 1.3rem;
+  font-size: 13.5px;
 }
 
 .site-nav a {
