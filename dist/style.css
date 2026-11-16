@@ -14,7 +14,7 @@
   --blue: #1d4ed8;
   --warn: #b45309;
   --red: #d92d4a;
-  --bg-image: url("assets/bg.jpg");
+  --bg-image: url("assets/bg.webp");
   --scrim: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.3));
   --glass: rgba(255, 255, 255, 0.9);
   --glass-sticky: rgba(255, 255, 255, 0.95);
