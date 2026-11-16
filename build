@@ -44,24 +44,46 @@ summary_of() {
 }
 
 render_home() {
-  local block tmp name noun
+  local block tmp name base date_part year day title noun last_year
   block=$(mktemp)
   tmp=$(mktemp)
   noun="files"
   [ "${#files[@]}" -eq 1 ] && noun="file"
+  last_year=""
 
   {
     printf '<p class="cmd"><span class="sig">$</span> ls posts/ <span class="dim">— %d %s</span></p>\n' "${#files[@]}" "$noun"
-    if [ ${#files[@]} -gt 0 ]; then
-      printf '<ul class="filelist">\n'
+
+    if [ ${#files[@]} -eq 0 ]; then
+      printf '<p class="empty">// posts/ 里还没有 md</p>\n'
+    else
       for path in "${files[@]}"; do
         name=$(basename "$path")
-        printf '<li><a class="file" href="post.html?p=%s"><span class="fmark">-</span><span class="fname">%s</span></a></li>\n' \
-          "$(xml_escape "${name// /%20}")" "$(xml_escape "$name")"
+        base=${name%.md}
+        date_part=${base%%-*}
+
+        if [[ $date_part =~ ^[0-9]{6}$ ]]; then
+          year="20${date_part:0:2}"
+          day="${date_part:2:2}-${date_part:4:2}"
+          title=${base#*-}
+        else
+          year=$(date -d "@$(mtime_of "$path")" +%Y)
+          day=$(date -d "@$(mtime_of "$path")" +%m-%d)
+          title=$base
+        fi
+
+        if [ "$year" != "$last_year" ]; then
+          if [ -n "$last_year" ]; then
+            printf '</ul>\n'
+          fi
+          printf '<h2 class="year">%s</h2>\n<ul class="posts">\n' "$(xml_escape "$year")"
+          last_year=$year
+        fi
+
+        printf '<li><a class="post-row" href="post.html?p=%s"><time>%s</time><span class="post-title">%s</span></a></li>\n' \
+          "$(xml_escape "${name// /%20}")" "$(xml_escape "$day")" "$(xml_escape "$title")"
       done
       printf '</ul>\n'
-    else
-      printf '<p class="empty">// posts/ 里还没有 md</p>\n'
     fi
   } > "$block"
 
