@@ -71,68 +71,26 @@ a {
 .win {
   max-width: 880px;
   margin: 0 auto;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 32px 80px -40px rgba(0, 0, 0, 0.9);
-}
-
-.win-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--panel-2);
-  border-bottom: 1px solid var(--line);
-  font-size: 11.5px;
-  letter-spacing: 0.04em;
-  color: var(--dim-2);
-}
-
-.dots {
-  display: inline-flex;
-  gap: 5px;
-}
-
-.dots i {
-  width: 8px;
-  height: 8px;
-  display: block;
-  border: 1px solid var(--line);
-}
-
-.dots i:nth-child(1) {
-  background: #2b3b33;
-}
-
-.dots i:nth-child(2) {
-  background: #3a3627;
-}
-
-.dots i:nth-child(3) {
-  background: #2a3730;
-}
-
-.win-title {
-  flex: 1;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .theme-btn {
   font: inherit;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--dim);
-  background: transparent;
-  border: 1px solid var(--line);
-  padding: 1px 7px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 0 0 1px;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
 
 .theme-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  color: var(--ink-strong);
+  border-bottom-color: var(--line);
 }
 
 .site-head {
@@ -219,7 +177,7 @@ main {
 }
 
 .hero-title {
-  margin: 0 0 0.5rem;
+  margin: 0;
   font-size: clamp(1.75rem, 4.6vw, 2.5rem);
   line-height: 1.2;
   font-weight: 600;
@@ -234,13 +192,6 @@ main {
   height: 2px;
   margin-top: 0.85rem;
   background: linear-gradient(90deg, var(--accent), transparent);
-}
-
-.hero-desc {
-  margin: 0;
-  max-width: 60ch;
-  color: var(--dim);
-  font-size: 14.5px;
 }
 
 .year {
@@ -731,10 +682,6 @@ tbody tr:hover {
 
   .site-foot {
     padding: 1.1rem 1rem;
-  }
-
-  .win-bar {
-    font-size: 10.5px;
   }
 
   .prose {
