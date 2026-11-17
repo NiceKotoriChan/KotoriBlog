@@ -9,8 +9,8 @@
   <generator>build</generator>
   <entry>
     <id>261116-hello-world</id>
-    <title>hello-world</title>
-    <link href="https://kotoriblog.pages.dev/blogs/261116-hello-world.html"/>
+    <title>hello world</title>
+    <link href="https://kotoriblog.pages.dev/261116-hello-world.html"/>
     <updated>2026-11-15T16:00:00Z</updated>
     <published>2026-11-15T16:00:00Z</published>
     <summary type="text">首先是 url，/261116-hello-world.html 这种写法对 SEO 友好，最好不要有中文，还加上了时间确保唯一性</summary>

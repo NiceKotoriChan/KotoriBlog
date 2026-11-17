@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{HEAD_TITLE}}</title>
+{{DESC}}
+<link rel="icon" href="{{BASE}}favicon.png" type="image/png">
+<link rel="stylesheet" href="{{BASE}}style.css">
+<link rel="alternate" type="application/atom+xml" title="Kotori Blog" href="{{BASE}}atom.xml">
+</head>
+<body {{BODY_ATTRS}}>
+<header class="site-head">
+<div class="head-inner">
+<a class="brand" href="{{BASE}}index.html"><span class="brand-name">Kotori Blog</span></a>
+<nav class="site-nav">
+{{NAV_HOME}}
+<a href="{{BASE}}atom.xml">rss</a>
+<a href="https://github.com/NiceKotoriChan" target="_blank" rel="noopener">github</a>
+</nav>
+</div>
+</header>
+<div class="win">
+<main>
+{{MAIN}}
+</main>
+<footer class="site-foot">
+<p class="foot-meta">© 2026 Kotori · <a href="https://github.com/NiceKotoriChan" target="_blank" rel="noopener">github</a> <span class="dim">/</span> <a href="mailto:hi@example.com">mail</a></p>
+</footer>
+</div>
+{{SCRIPTS}}
+</body>
+</html>

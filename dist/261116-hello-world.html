@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>hello-world — Kotori Blog</title>
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../style.css">
-<link rel="alternate" type="application/atom+xml" title="Kotori Blog" href="../atom.xml">
+<title>hello world — Kotori Blog</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="style.css">
+<link rel="alternate" type="application/atom+xml" title="Kotori Blog" href="atom.xml">
 </head>
 <body data-page="post" data-post="posts/261116-hello-world.md">
 <header class="site-head">
 <div class="head-inner">
-<a class="brand" href="../index.html"><span class="brand-name">Kotori Blog</span></a>
+<a class="brand" href="index.html"><span class="brand-name">Kotori Blog</span></a>
 <nav class="site-nav">
-<a href="../index.html">home</a>
-<a href="../atom.xml">rss</a>
+<a href="index.html">home</a>
+<a href="atom.xml">rss</a>
 <a href="https://github.com/NiceKotoriChan" target="_blank" rel="noopener">github</a>
 </nav>
 </div>
@@ -23,13 +23,27 @@
 <main>
 <article id="post">
 <header class="post-head">
-<h1>hello-world</h1>
+<h1>hello world</h1>
+<p class="post-meta">2026-11-16 · 118 字 · 约 1 分钟</p>
 </header>
 <div class="prose">
 <p>首先是 url，/261116-hello-world.html 这种写法对 SEO 友好，最好不要有中文，还加上了时间确保唯一性</p>
 <p>然后解析时分词就行，取首段为时间，后面的为标题</p>
+<h2>build</h2>
+<p>title 取文件内部第一行</p>
+<p>RSS 还是不如直接看网站可靠，不过支持一下也没什么。另外，现在基本是 Atom 格式了</p>
+<p>title
+link
+id
+publishd
+updated
+summary
+content
+category</p>
+<p>time
+word:</p>
 </div>
-<p class="more"><a href="../index.html">← 返回</a></p>
+<p class="more"><a href="index.html">← 返回</a></p>
 </article>
 <section id="comments" class="comments" hidden></section>
 </main>
@@ -37,8 +51,8 @@
 <p class="foot-meta">© 2026 Kotori · <a href="https://github.com/NiceKotoriChan" target="_blank" rel="noopener">github</a> <span class="dim">/</span> <a href="mailto:hi@example.com">mail</a></p>
 </footer>
 </div>
-<script src="../app.js"></script>
-<script src="../giscus.config.js"></script>
-<script src="../comments.js"></script>
+<script src="app.js"></script>
+<script src="giscus.config.js"></script>
+<script src="comments.js"></script>
 </body>
 </html>
