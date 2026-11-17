@@ -1,0 +1,1 @@
+/home/kotori/projects/AGENTS.md

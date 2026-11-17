@@ -32,12 +32,6 @@
     section.appendChild(script);
   }
 
-  window.addEventListener("message", function (event) {
-    if (event.origin !== "https://giscus.app") return;
-    if (event.data && event.data.giscus && event.data.giscus.discussion)
-      section.dataset.loaded = "1";
-  });
-
   var post = document.body.dataset.post;
   if (post) inject(post);
 })();
